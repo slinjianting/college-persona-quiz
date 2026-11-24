@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>测你是哪种大学生人格</title>
+<style>
+  :root{
+    --paper:#FBF6EE; --ink:#241F1C; --muted:#8A8078;
+    --red:#B84A3C; --gold:#C9A227; --line:#E6DCCE; --card:#FFFDF9;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:18px 16px 28px;
+  }
+  .wrap{width:100%;max-width:430px}
+  .brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--red);display:inline-block;margin-right:7px}
+  .brand span{font-size:12px;letter-spacing:1.6px;color:var(--muted)}
+  .brand .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:3px 8px;border-radius:20px}
+
+  /* ---------- intro ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:0 10px 30px rgba(70,50,30,.06)}
+  h1{font-size:27px;line-height:1.32;margin:0 0 12px;letter-spacing:-.5px}
+  h1 em{font-style:normal;color:var(--red)}
+  .sub{font-size:14px;line-height:1.75;color:#5D554E;margin:0 0 20px}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .meta span{font-size:12px;color:var(--muted);background:#F4EDE2;border-radius:8px;padding:5px 9px}
+  .btn{
+    width:100%;border:0;border-radius:14px;padding:16px;font-size:16px;font-weight:600;
+    background:var(--ink);color:#FFF8EC;cursor:pointer;letter-spacing:.5px;
+  }
+  .btn:active{transform:scale(.99)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+  .hint{font-size:11.5px;color:#A79C91;text-align:center;margin-top:12px}
+
+  /* ---------- quiz ---------- */
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .bar{flex:1;height:5px;background:#EEE4D6;border-radius:99px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--red);border-radius:99px;transition:width .3s ease}
+  .count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .q{font-size:20px;line-height:1.5;font-weight:600;margin:6px 0 20px;letter-spacing:-.2px}
+  .opt{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    background:#FFF;border:1.5px solid var(--line);border-radius:14px;
+    padding:14px 15px;margin-bottom:10px;font-size:15px;line-height:1.55;color:var(--ink);
+    cursor:pointer;transition:.16s;font-family:inherit;
+  }
+  .opt:hover{border-color:#D8C7B0;background:#FFFCF6}
+  .opt:active{transform:scale(.995)}
+  .opt b{flex:0 0 22px;height:22px;border-radius:50%;background:#F1E7D9;color:#8A7568;
+    font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .opt.sel{border-color:var(--ink);background:#FBF3E6}
+  .opt.sel b{background:var(--ink);color:#FFF}
+
+  /* ---------- result ---------- */
+  .rcard{
+    background:linear-gradient(160deg,#26201C 0%,#3A2F27 55%,#4A2E24 100%);
+    color:#F7EEDF;border-radius:22px;padding:26px 22px 22px;position:relative;overflow:hidden;
+  }
+  .rcard:before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(201,162,39,.28),transparent 68%);right:-90px;top:-110px}
+  .rk{font-size:11px;letter-spacing:2.4px;color:#C9A227;margin-bottom:10px}
+  .rname{font-size:30px;font-weight:800;line-height:1.2;letter-spacing:-.6px;margin:0 0 8px}
+  .rline{font-size:14px;line-height:1.7;color:#DCCFBD;margin:0 0 16px}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+  .tags span{font-size:11.5px;border:1px solid rgba(201,162,39,.45);color:#E4CF9A;border-radius:20px;padding:4px 10px}
+  .rows{border-top:1px solid rgba(255,255,255,.12);padding-top:14px}
+  .row{display:flex;gap:10px;font-size:13px;line-height:1.65;color:#E9DFCE;margin-bottom:8px}
+  .row i{font-style:normal;color:#C9A227;flex:0 0 34px;font-size:11.5px;padding-top:1px;letter-spacing:1px}
+  .mix{margin-top:16px;border-top:1px solid rgba(255,255,255,.12);padding-top:14px}
+  .mix .lbl{font-size:11px;letter-spacing:1.6px;color:#B9A995;margin-bottom:9px}
+  .mx{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:12px;color:#DCCFBD}
+  .mx .nm{flex:0 0 96px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mx .tr{flex:1;height:6px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden}
+  .mx .tr i{display:block;height:100%;background:linear-gradient(90deg,#C9A227,#E8CE7A);border-radius:99px}
+  .mx .pc{flex:0 0 34px;text-align:right;font-variant-numeric:tabular-nums}
+  .rfoot{margin-top:16px;font-size:10.5px;color:#9A8E7E;letter-spacing:.5px}
+  .acts{display:flex;gap:10px;margin-top:16px}
+  .acts .btn{font-size:14.5px;padding:14px}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:#241F1C;color:#FFF8EC;font-size:13px;padding:10px 16px;border-radius:99px;opacity:0;
+    transition:.25s;pointer-events:none;z-index:9}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .fade{animation:fade .28s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  canvas{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <span><i class="dot"></i>大学生人格图鉴</span>
+    <span class="tag">仅供娱乐</span>
+  </div>
+  <div id="app"></div>
+</div>
+<div class="toast" id="toast"></div>
+<canvas id="cv"></canvas>
+
+<script>
+/* ============ 人格类型 ============ */
+const TYPES = {
+  juan:{name:"卷王 · 绩点刺客", line:"图书馆闭馆的那一刻，才是我一天的开始。",
+    tags:["计划表狂魔","自习位雷达","期末开挂"],
+    rows:[["宿舍","桌上三支荧光笔，按颜色分类"],["课堂","坐第二排，笔记比老师讲得多"],["期末","提前两周开始，然后焦虑两周"]],
+    rare:"6.8%"},
+  bai:{name:"摆烂仙人 · 躺平宗师", line:"只要我不努力，就没人能利用我的努力。",
+    tags:["床的第二人格","DDL生产力","心态奇稳"],
+    rows:[["宿舍","床上四件套就是我的宇宙"],["课堂","人在，灵魂在宿舍"],["期末","通宵一晚，考完就忘"]],
+    rare:"11.2%"},
+  she:{name:"社交悍匪 · 全校区熟人", line:"食堂阿姨记得我，保安也记得我。",
+    tags:["群聊永动机","人脉地图","自来熟"],
+    rows:[["宿舍","门永远开着，人永远不在"],["课堂","一进门就有三个招呼打"],["期末","借笔记从来不用愁"]],
+    rare:"7.4%"},
+  ghost:{name:"后排幽灵 · 隐形人", line:"点名那一刻，心跳是整个学期最快的。",
+    tags:["前排绝缘体","三天可见","独处舒适"],
+    rows:[["宿舍","耳机一戴，与世无争"],["课堂","最后一排靠窗，存在感 0"],["期末","消息永远晚回两小时"]],
+    rare:"9.6%"},
+  slash:{name:"斜杠狂魔 · 副业脑", line:"学生是身份，搞钱是信仰。",
+    tags:["三个副业群","成本核算癖","简历厚过成绩单"],
+    rows:[["宿舍","一边听课一边回客户消息"],["课堂","在草稿纸上算利润率"],["期末","考完立刻回去发货"]],
+    rare:"4.1%"},
+  wen:{name:"精神贵族 · 文青病", line:"耳机里是另一个世界，比这里好些。",
+    tags:["深夜写诗","电影>课","讨厌敷衍"],
+    rows:[["宿舍","台灯、旧书、冷掉的茶"],["课堂","认真听讲，然后失望"],["期末","写论文写到自我感动"]],
+    rare:"5.3%"},
+  mom:{name:"班级工具人 · 老好人", line:"有事找我，我都行 —— 然后我一个人做完。",
+    tags:["作业组长永久户","不会说不","记得所有生日"],
+    rows:[["宿舍","室友的事比自己的事上心"],["课堂","永远在替别人占座"],["期末","帮四个人改过格式"]],
+    rare:"8.9%"},
+  game:{name:"熬夜冠军 · 电子宠物", line:"再打一把就睡。这是第四把。",
+    tags:["凌晨三点战神","奶茶续命","手速前十"],
+    rows:[["宿舍","屏幕光是我唯一的光源"],["课堂","补觉，但从不缺席"],["期末","白天睡觉，晚上突击"]],
+    rare:"12.5%"}
+};
+
+/* ============ 题目 ============ */
+const QS = [
+  {q:"早上第一节有课，你的闹钟响了第三遍。",o:[
+    ["爬起来洗漱，顺便背了二十个单词",{juan:2}],
+    ["关掉，再睡十分钟——直接睡到第二节课",{bai:2,game:1}],
+    ["爬起来，因为约了人一起吃早饭",{she:2}],
+    ["关掉，反正老师不点名",{ghost:2,bai:1}]]},
+
+  {q:"进教室的时候，你通常坐哪？",o:[
+    ["第二排中间，视线最好",{juan:2}],
+    ["最后一排靠门，方便跑",{ghost:2,game:1}],
+    ["哪儿有熟人坐哪儿",{she:2}],
+    ["看心情，先帮别人占个座",{mom:2}]]},
+
+  {q:"小组作业分工，最后变成——",o:[
+    ["我一个人全做了，反正快",{mom:3}],
+    ["我做了 PPT 里最难的那页",{juan:2}],
+    ["我负责发言，内容别人写",{she:2}],
+    ["我负责找人，找到人就算完成",{slash:2}]]},
+
+  {q:"周末两天，你的默认剧本是——",o:[
+    ["图书馆两天，中间吃两顿饭",{juan:2}],
+    ["床上两天，外卖三次",{bai:3}],
+    ["约人出去，去哪儿都行",{she:2}],
+    ["一个人看两部电影，写了点东西",{wen:3}]]},
+
+  {q:"深夜一点，你还没睡，因为——",o:[
+    ["在改明天要交的东西",{juan:2,mom:1}],
+    ["在打游戏，赢一把就睡",{game:3}],
+    ["在跟人聊天，越聊越精神",{she:2}],
+    ["在写一段没人看的文字",{wen:3}]]},
+
+  {q:"手机里最舍不得删的群是——",o:[
+    ["课程资料群（里面全是我的笔记）",{juan:2}],
+    ["某个副业/兼职群",{slash:3}],
+    ["一堆人的大群，热闹",{she:2}],
+    ["其实都设了免打扰",{ghost:3}]]},
+
+  {q:"老师突然点名，点到你，你会——",o:[
+    ["站起来完整回答，还补充了两点",{juan:2}],
+    ["小声说\"不会\"，坐下继续低头",{ghost:2,bai:1}],
+    ["顺着话往下聊，气氛挺好",{she:3}],
+    ["答完顺便替室友也答了",{mom:2}]]},
+
+  {q:"看到别人在朋友圈晒证书，你的第一反应——",o:[
+    ["我下周也去报一个",{juan:2}],
+    ["关我什么事，我继续躺",{bai:2}],
+    ["点个赞，顺便问怎么报的",{she:2}],
+    ["这个证书含金量其实一般",{wen:2,slash:1}]]},
+
+  {q:"四年之后，你觉得自己最可能是——",o:[
+    ["保研/考研上岸，履历一条不落",{juan:3}],
+    ["有个自己的小生意，不一定毕业就上班",{slash:3}],
+    ["去哪儿都行，人脉比学历管用",{she:2}],
+    ["还没想好，但也不急",{bai:2,game:1}]]},
+
+  {q:"室友半夜开灯找东西，你会——",o:[
+    ["醒了，然后顺手帮他找",{mom:3}],
+    ["翻个身继续睡，明天再说",{bai:2}],
+    ["起来一起聊到三点",{she:2,game:1}],
+    ["戴耳塞，翻个白眼",{ghost:2,wen:1}]]}
+];
+
+/* ============ 状态 ============ */
+const app = document.getElementById('app');
+const toastEl = document.getElementById('toast');
+let idx = 0, score = {}, history = [];
+
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('on');
+  clearTimeout(toastEl._t); toastEl._t = setTimeout(()=>toastEl.classList.remove('on'), 1800);
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+
+/* ============ 首页 ============ */
+function intro(){
+  app.innerHTML = `
+    <div class="card fade">
+      <h1>测你是哪种<em>大学生人格</em></h1>
+      <p class="sub">10 道题，大概两分钟。<br>没有正确答案，凭第一感觉选。<br>测完你会得到一张可以保存的人格卡。</p>
+      <div class="meta"><span>10 题</span><span>约 2 分钟</span><span>8 种人格</span></div>
+      <button class="btn" onclick="start()">开始测试</button>
+      <div class="hint">结果仅供娱乐，不构成任何人生建议</div>
+    </div>`;
+}
+
+function start(){ idx = 0; score = {}; history = []; render(); }
+
+/* ============ 答题 ============ */
+function render(){
+  const q = QS[idx];
+  const pct = Math.round(idx / QS.length * 100);
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="count">${idx+1} / ${QS.length}</div>
+    </div>
+    <div class="card fade" style="padding:22px 20px 18px">
+      <div class="q">${esc(q.q)}</div>
+      ${q.o.map((o,i)=>`<button class="opt" onclick="pick(${i})"><b>${'ABCD'[i]}</b><span>${esc(o[0])}</span></button>`).join('')}
+      ${idx>0?`<button class="btn ghost" style="margin-top:6px;font-size:14px;padding:11px" onclick="back()">← 上一题</button>`:''}
+    </div>`;
+}
+
+function pick(i){
+  const q = QS[idx];
+  const w = q.o[i][1];
+  for (const k in w) score[k] = (score[k]||0) + w[k];
+  history.push(i);
+  document.querySelectorAll('.opt').forEach((el,j)=>el.classList.toggle('sel', j===i));
+  setTimeout(()=>{ idx++; (idx < QS.length) ? render() : result(); }, 190);
+}
+function back(){
+  idx--;
+  const w = QS[idx].o[history.pop()][1];
+  for (const k in w) score[k] = Math.max(0,(score[k]||0) - w[k]);
+  render();
+}
+
+/* ============ 结果 ============ */
+function ranked(){
+  return Object.keys(TYPES)
+    .map(k=>({k, v:score[k]||0}))
+    .sort((a,b)=> b.v - a.v || Object.keys(TYPES).indexOf(a.k)-Object.keys(TYPES).indexOf(b.k));
+}
+function result(){
+  const r = ranked();
+  const top = TYPES[r[0].k];
+  const total = r.reduce((s,x)=>s+x.v,0) || 1;
+  const mix = r.slice(0,4).map(x=>({name:TYPES[x.k].name.split(' · ')[0], pc:Math.max(1,Math.round(x.v/total*100))}));
+  const rest = 100 - mix.reduce((s,x)=>s+x.pc,0);
+  if (rest >= 5) mix.push({name:"其他成分", pc:rest});
+
+  app.innerHTML = `
+    <div class="rcard fade" id="rcard">
+      <div class="rk">YOUR COLLEGE PERSONA · ${top.rare}</div>
+      <div class="rname">${top.name}</div>
+      <p class="rline">「${top.line}」</p>
+      <div class="tags">${top.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      <div class="rows">
+        ${top.rows.map(x=>`<div class="row"><i>${x[0]}</i><span>${x[1]}</span></div>`).join('')}
+      </div>
+      <div class="mix">
+        <div class="lbl">你的成分</div>
+        ${mix.map(m=>`<div class="mx"><span class="nm">${m.name}</span><span class="tr"><i style="width:${m.pc}%"></i></span><span class="pc">${m.pc}%</span></div>`).join('')}
+      </div>
+      <div class="rfoot">大学生人格图鉴 · 仅供娱乐</div>
+    </div>
+    <div class="acts">
+      <button class="btn" onclick="saveImg()">保存图片</button>
+      <button class="btn ghost" onclick="start()">重测</button>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ============ 导出图片 ============ */
+function wrapText(ctx, text, x, y, maxW, lh){
+  let line = '', yy = y;
+  for (const ch of text){
+    if (ctx.measureText(line + ch).width > maxW && line){ ctx.fillText(line, x, yy); line = ch; yy += lh; }
+    else line += ch;
+  }
+  ctx.fillText(line, x, yy);
+  return yy;
+}
+function saveImg(){
+  const r = ranked();
+  const top = TYPES[r[0].k];
+  const total = r.reduce((s,x)=>s+x.v,0) || 1;
+  const mix = r.slice(0,4).map(x=>({name:TYPES[x.k].name.split(' · ')[0], pc:Math.max(1,Math.round(x.v/total*100))}));
+
+  const W = 1080, H = 1440, P = 84;
+  const F = '"PingFang SC","Microsoft YaHei",sans-serif';
+  const cv = document.getElementById('cv');
+  cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+
+  function wrap(ctx, text, x, y, maxW, lh){
+    let line = '', yy = y;
+    for (const ch of text){
+      if (ctx.measureText(line + ch).width > maxW && line){ ctx.fillText(line, x, yy); line = ch; yy += lh; }
+      else line += ch;
+    }
+    ctx.fillText(line, x, yy);
+    return yy;
+  }
+
+  // ---- content, drawn at vertical offset oy, returns bottom y ----
+  function paint(ctx, oy){
+    let y = oy;
+
+    ctx.fillStyle = '#C9A227'; ctx.font = `600 25px ${F}`;
+    ctx.fillText('YOUR COLLEGE PERSONA  ·  ' + top.rare, P, y);
+    y += 104;
+
+    ctx.fillStyle = '#F7EEDF'; ctx.font = `800 84px ${F}`;
+    y = wrap(ctx, top.name, P, y, W - P*2, 100);
+    y += 74;
+
+    ctx.fillStyle = '#DCCFBD'; ctx.font = `400 34px ${F}`;
+    y = wrap(ctx, '「' + top.line + '」', P, y, W - P*2, 56);
+    y += 66;
+
+    // tags
+    ctx.font = `500 26px ${F}`;
+    let tx = P;
+    for (const t of top.tags){
+      const w = ctx.measureText(t).width + 44;
+      ctx.strokeStyle = 'rgba(201,162,39,.5)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(tx, y - 34, w, 50, 25); ctx.stroke();
+      ctx.fillStyle = '#E4CF9A'; ctx.fillText(t, tx + 22, y);
+      tx += w + 14;
+    }
+    y += 84;
+
+    // three rows
+    ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P, y - 44); ctx.lineTo(W - P, y - 44); ctx.stroke();
+    for (const [k,v] of top.rows){
+      ctx.fillStyle = '#C9A227'; ctx.font = `500 25px ${F}`; ctx.fillText(k, P, y);
+      ctx.fillStyle = '#E9DFCE'; ctx.font = `400 31px ${F}`;
+      y = wrap(ctx, v, P + 100, y, W - P*2 - 100, 44) + 52;
+    }
+
+    // composition bars
+    y += 36;
+    ctx.fillStyle = '#B9A995'; ctx.font = `500 22px ${F}`;
+    ctx.fillText('你的成分', P, y);
+    y += 52;
+    const bx = P + 240, bw = W - P - bx - 110;
+    for (const m of mix){
+      ctx.fillStyle = '#DCCFBD'; ctx.font = `400 27px ${F}`;
+      ctx.fillText(m.name, P, y + 9);
+      ctx.fillStyle = 'rgba(255,255,255,.13)';
+      ctx.beginPath(); ctx.roundRect(bx, y - 8, bw, 13, 7); ctx.fill();
+      ctx.fillStyle = '#C9A227';
+      ctx.beginPath(); ctx.roundRect(bx, y - 8, Math.max(14, bw*m.pc/100), 13, 7); ctx.fill();
+      ctx.fillStyle = '#DCCFBD'; ctx.font = `400 25px ${F}`;
+      ctx.fillText(m.pc + '%', W - P - 78, y + 9);
+      y += 60;
+    }
+    return y;
+  }
+
+  // ---- measure then centre ----
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const oc = off.getContext('2d');
+  const bottom = paint(oc, 0);
+  const topPad = Math.max(150, Math.round((H - bottom) / 2) + 20);
+
+  // ---- background ----
+  const g = c.createLinearGradient(0,0,W,H);
+  g.addColorStop(0,'#26201C'); g.addColorStop(.6,'#3A2F27'); g.addColorStop(1,'#4A2E24');
+  c.fillStyle = g; c.fillRect(0,0,W,H);
+  const glow = c.createRadialGradient(W-120,160,20,W-120,160,540);
+  glow.addColorStop(0,'rgba(201,162,39,.30)'); glow.addColorStop(1,'rgba(201,162,39,0)');
+  c.fillStyle = glow; c.fillRect(0,0,W,H);
+
+  paint(c, topPad);
+
+  // ---- footer ----
+  c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(P, H - 118); c.lineTo(W - P, H - 118); c.stroke();
+  c.fillStyle = '#9A8E7E'; c.font = `400 22px ${F}`;
+  c.fillText('大学生人格图鉴 · 仅供娱乐', P, H - 70);
+  c.textAlign = 'right';
+  c.fillText('长按保存 / 发给室友', W - P, H - 70);
+  c.textAlign = 'left';
+
+  const a = document.createElement('a');
+  a.download = '大学生人格_' + top.name.split(' · ')[0] + '.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+  toast('图片已生成，看图或下载');
+}
+
+intro();
+</script>
+</body>
+</html>
